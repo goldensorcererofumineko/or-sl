@@ -1,4 +1,4 @@
-<%= form_with model: sleep, local: true do |f|%>
+<%= form_with model: sleeping, local: true do |f|%>
   <div class="field">
     <%= f.label :start_time, "睡眠開始時間" %><br />
     <%= f.datetime_local_field :start_time, class: "form__text", id: "sleep_start_time" %>
@@ -11,7 +11,7 @@
 
   <div class="field">
     <%= f.label :quality, "睡眠の質" %><br />
-    <%= f.select :quality, Sleep.qualities.keys, class: "form__select", id: "sleep_quality" %>
+    <%= f.select :quality, Sleeping.qualities.keys, class: "form__select", id: "sleep_quality" %>
   </div>
 
   <div class="field">

@@ -4,11 +4,11 @@
       <div class="greeting">
         <%= "こんにちは、#{current_user.nickname} さん" %>
       </div> 
-    <h2>平均睡眠時間: <%= @average_sleep_duration %> 時間</h2>
+       <h2>平均睡眠時間: <%= @average_sleep_duration_hours %>時間 <%= @average_sleep_duration_minutes %>分</h2>
     <% end %>
     <h2>睡眠記録一覧</h2>
     <div class="card__wrapper">
-       <%= render partial: "sleep",collection:@sleeps %>
+       <%= render partial: "sleep",locals: { sleeping: @sleepings }  %>
     </div>
   </div>
 </main>

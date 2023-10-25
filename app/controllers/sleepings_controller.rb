@@ -3,19 +3,22 @@ class SleepingsController < ApplicationController
   before_action :set_sleep, only: [:show, :edit, :update, :destroy]
   def index
     @sleepings = Sleeping.all
-
+    total_sleep_duration = @sleepings.sum { |sleeping| sleeping.sleep_duration.to_i }
+    average_sleep_duration_minutes = total_sleep_duration / @sleepings.length
+    @average_sleep_duration_hours = average_sleep_duration_minutes / 60
+    @average_sleep_duration_minutes = average_sleep_duration_minutes % 60
   end
 
   def show
   end
 
   def new
-    @Sleeping = Sleeping.new
+    @sleeping = Sleeping.new
   end
 
   def create
     @sleepings = Sleeping.new(sleep_params)
-    if @sleepings.save
+    if @sleeping.save
       redirect_to root_path
     else
       render :new
@@ -26,7 +29,7 @@ class SleepingsController < ApplicationController
   end
 
   def update
-    @Sleeping = Sleeping.find(params[:id])
+    @sleeping = Sleeping.find(params[:id])
     if sleep.update(sleep_params)
       redirect_to root_path
     else
@@ -35,8 +38,8 @@ class SleepingsController < ApplicationController
   end
 
   def destroy
-    @Sleeping = Sleeping.find(params[:id])
-    Sleeping.destroy
+    @sleeping = Sleeping.find(params[:id])
+    @sleeping.destroy
     redirect_to root_path
   end
 
@@ -49,4 +52,5 @@ class SleepingsController < ApplicationController
   def sleep_params
     params.require(:sleep).permit(:start_time, :end_time, :quality, :memo).merge(user_id: current_user.id)
   end
+
 end
