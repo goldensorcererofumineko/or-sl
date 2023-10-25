@@ -3,10 +3,15 @@ class SleepingsController < ApplicationController
   before_action :set_sleep, only: [:show, :edit, :update, :destroy]
   def index
     @sleepings = Sleeping.all
-    total_sleep_duration = @sleepings.sum { |sleeping| sleeping.sleep_duration.to_i }
-    average_sleep_duration_minutes = total_sleep_duration / @sleepings.length
-    @average_sleep_duration_hours = average_sleep_duration_minutes / 60
-    @average_sleep_duration_minutes = average_sleep_duration_minutes % 60
+    if @sleepings.present? 
+      total_sleep_duration = @sleepings.sum { |sleeping| sleeping.sleep_duration.to_i }
+      average_sleep_duration_minutes = total_sleep_duration / @sleepings.length
+      @average_sleep_duration_hours = average_sleep_duration_minutes / 60
+      @average_sleep_duration_minutes = average_sleep_duration_minutes % 60
+    else
+      @average_sleep_duration_hours = 0
+      @average_sleep_duration_minutes = 0
+    end
   end
 
   def show
