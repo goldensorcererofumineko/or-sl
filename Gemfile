@@ -74,3 +74,7 @@ end
 group :production do
   gem 'pg'
 end
+
+gem 'devise'
+gem 'rubocop'
+gem 'pry-rails'
