@@ -4,15 +4,7 @@ class SleepingsController < ApplicationController
 
   def index
     @sleepings = Sleeping.all
-    if @sleepings.present? 
-      total_sleep_duration = @sleepings.sum { |sleeping| sleeping.sleep_duration.to_i }
-      average_sleep_duration_minutes = total_sleep_duration.to_f / @sleepings.length  # 平均の合計分数
-      @average_sleep_duration_hours = (average_sleep_duration_minutes / 60).to_i  # 時間（整数部分）
-      @average_sleep_duration_minutes = (average_sleep_duration_minutes % 60).to_i  # 分（余り）      
-    else
-      @average_sleep_duration_hours = 0
-      @average_sleep_duration_minutes = 0
-    end
+    @average_sleep_duration_hours, @average_sleep_duration_minutes = calculate_average_sleep_duration(@sleepings)
   end
 
   def show
@@ -57,5 +49,17 @@ class SleepingsController < ApplicationController
 
   def sleep_params
     params.require(:sleeping).permit(:start_time, :end_time, :quality, :memo).merge(user_id: current_user.id)
+  end
+
+  def calculate_average_sleep_duration(sleepings)
+    if sleepings.present?
+      total_sleep_duration = sleepings.sum { |sleeping| sleeping.sleep_duration.to_i }
+      average_sleep_duration_minutes = total_sleep_duration.to_f / sleepings.length
+      average_sleep_duration_hours = (average_sleep_duration_minutes / 60).to_i
+      average_sleep_duration_minutes = (average_sleep_duration_minutes % 60).to_i
+      return [average_sleep_duration_hours, average_sleep_duration_minutes]
+    else
+      return [0, 0]
+    end
   end
 end
