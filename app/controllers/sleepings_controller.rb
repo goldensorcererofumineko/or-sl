@@ -1,10 +1,17 @@
 class SleepingsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
   before_action :set_sleep, only: [:show, :edit, :update, :destroy]
-
   def index
     @sleepings = Sleeping.all
-    @average_sleep_duration_hours, @average_sleep_duration_minutes = calculate_average_sleep_duration(@sleepings)
+    if @sleepings.present? 
+      total_sleep_duration = @sleepings.sum { |sleeping| sleeping.sleep_duration.to_i }
+      average_sleep_duration_minutes = total_sleep_duration / @sleepings.length
+      @average_sleep_duration_hours = average_sleep_duration_minutes / 60
+      @average_sleep_duration_minutes = average_sleep_duration_minutes % 60
+    else
+      @average_sleep_duration_hours = 0
+      @average_sleep_duration_minutes = 0
+    end
   end
 
   def show
@@ -15,7 +22,7 @@ class SleepingsController < ApplicationController
   end
 
   def create
-    @sleeping = Sleeping.new(sleep_params)  
+    @sleepings = Sleeping.new(sleep_params)
     if @sleeping.save
       redirect_to root_path
     else
@@ -27,8 +34,8 @@ class SleepingsController < ApplicationController
   end
 
   def update
-    @sleeping = Sleeping.find(params[:id])  # Use @sleeping, not sleep
-    if @sleeping.update(sleep_params)  # Use @sleeping, not sleep
+    @sleeping = Sleeping.find(params[:id])
+    if sleep.update(sleep_params)
       redirect_to root_path
     else
       render :edit
@@ -44,22 +51,11 @@ class SleepingsController < ApplicationController
   private
 
   def set_sleep
-    @sleeping = Sleeping.find(params[:id])  # Use @sleeping, not @Sleeping
+    @Sleeping = Sleeping.find(params[:id])
   end
 
   def sleep_params
-    params.require(:sleeping).permit(:start_time, :end_time, :quality, :memo).merge(user_id: current_user.id)
+    params.require(:sleep).permit(:start_time, :end_time, :quality, :memo).merge(user_id: current_user.id)
   end
 
-  def calculate_average_sleep_duration(sleepings)
-    if sleepings.present?
-      total_sleep_duration = sleepings.sum { |sleeping| sleeping.sleep_duration.to_i }
-      average_sleep_duration_minutes = total_sleep_duration.to_f / sleepings.length
-      average_sleep_duration_hours = (average_sleep_duration_minutes / 60).to_i
-      average_sleep_duration_minutes = (average_sleep_duration_minutes % 60).to_i
-      return [average_sleep_duration_hours, average_sleep_duration_minutes]
-    else
-      return [0, 0]
-    end
-  end
 end
